@@ -1,12 +1,12 @@
 #!/bin/sh
-# install AUR packages 
+# install AUR packages
 ipackage="$1" #Take the package name from the first ARG passed.
 basebuilddir="$HOME/Build" #Define the base Build DIR
 builddir="$HOME/Build/$ipackage" #Define the package Build DIR
 
 #Check if the base Build DIR exists, if not create it.
 if [ ! -d "$basebuilddir" ]; then
-	mkdir "$basebuilddir"
+    mkdir "$basebuilddir"
 fi
 
 #Define the function that install the AUR package in the system
@@ -16,9 +16,9 @@ function installpackage() {
     #Check if the git clone was sucesfull and decide what to do.
     if [ -f "$builddir/PKGBUILD" ]; then
         #Go to the package download directory and execute makepkg to build.
-        cd "$builddir" && ${EDITOR:-vi} PKGBUILD || exit
+        cd "$builddir" && ${EDITOR:-vim} PKGBUILD || exit
         makepkg -si && cd - &>/dev/null
-        
+
         #Ask to the user if want to remove the directory created for git
         read -p "Remove build directory? [Y/n]? " yn
         #Take the answer from the user input and decide what to do.
