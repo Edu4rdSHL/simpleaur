@@ -17,7 +17,7 @@ else
         exit
 
     elif [ -f "$simplesearchglobal" ]; then
-        printf "\n%s\n%s\n" "The following packages are availables for update, you can update one to one using: simpleaur package_name\n"
+        printf "\n%s\n%s\n" "The following packages are availables for update, you can update one to one using: simpleaur package_name"
         for aurpkg in $(pacman -Qmq); do simplesearch "$aurpkg" |grep "installed:"; done
         exit
     fi
