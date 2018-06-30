@@ -9,7 +9,7 @@ A script for install packages from AUR that doesn't require extra dependences, o
 <code>./simpleaur package-to-install</code></br>
 
 <b>For search: </b>
-<code>./simplesearch package-to-searchc</code></br>
+<code>./simplesearch package-to-search</code></br>
 
 <b>For updated check: </b>
 <code>./simplecheck</code>
