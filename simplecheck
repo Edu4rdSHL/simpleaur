@@ -5,19 +5,19 @@ simplesearchlocal="./simplesearch"
 simplesearchglobal="/usr/bin/simplesearch"
 
 if [ ! -f "$pacmaninstalled" ]; then
-    printf "\n%s\n" "You are not using ArchLinux (pacman not found in $pacmaninstalled)"
+    printf "\e[1;31m%-6s\e[m%s\n" "You are not using ArchLinux (pacman not found in $pacmaninstalled)"
     exit
 elif [ ! -f "$simplesearchlocal" ] && [ ! -f "$simplesearchglobal" ]; then
-    printf "\n%s\n" "simplesearch not found, make sure that you have the simplesearch script in the current folder or in /usr/bin/simplesearch"
+    printf "\e[1;31m%-6s\e[m%s\n" "simplesearch not found, make sure that you have the simplesearch script in the current folder or in /usr/bin/simplesearch"
     exit
 else
     if [ -f "$simplesearchlocal" ]; then
-        printf "\n%s\n%s\n" "The following packages are availables for update, you can update one to one using: simpleaur package_name"
+        printf "\n\e[1;32m%-6s\e[m\n%s\n" "The following packages are availables for update, you can update one to one using: simpleaur package_name"
         for aurpkg in $(pacman -Qmq |grep -v 'git'); do ./simplesearch "$aurpkg" |grep "installed:"; done
         exit
 
     elif [ -f "$simplesearchglobal" ]; then
-        printf "\n%s\n%s\n" "The following packages are availables for update, you can update one to one using: simpleaur package_name"
+        printf "\n\e[1;32m%-6s\e[m\n%s\n" "The following packages are availables for update, you can update one to one using: simpleaur package_name"
         for aurpkg in $(pacman -Qmq |grep -v 'git'); do simplesearch "$aurpkg" |grep "installed:"; done
         exit
     fi

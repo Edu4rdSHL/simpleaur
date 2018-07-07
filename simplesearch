@@ -3,9 +3,9 @@
 cowerinstalled="/usr/bin/cower"
 spackage=( "$@" )
 if [ ! -f "$cowerinstalled" ]; then
-	printf "\n%s\n" "Please, install cower first running in your terminal:  gpg --recv-keys 1EB2638FF56C0C53 && simpleaur cower"
+    printf "\e[1;31m%-6s\e[m%s\n" "Please, install cower first running in your terminal:  gpg --recv-keys 1EB2638FF56C0C53 && simpleaur cower"
 else
-	if [ "${#spackage[@]}" -ge 0 ]; then
-		cower -sc "${spackage[@]}"
-	fi
+    if [ "${#spackage[@]}" -ge 0 ]; then
+        cower -sc "${spackage[@]}"
+    fi
 fi
