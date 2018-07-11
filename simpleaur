@@ -1,13 +1,13 @@
 #!/bin/sh
 # install AUR packages
 ipackage="$1" #Take the package name from the first ARG passed.
-basebuilddir="$HOME/Build" #Define the base Build DIR
-builddir="$HOME/Build/$ipackage" #Define the package Build DIR
+basebuilddir="$HOME/.simpleaur/Build" #Define the base Build DIR
+builddir="$HOME/.simpleaur/Build/$ipackage" #Define the package Build DIR
 vimexist=$(which vim 2> /dev/null)
 
 #Check if the base Build DIR exists, if not create it.
 if [ ! -d "$basebuilddir" ]; then
-    mkdir "$basebuilddir"
+    mkdir -p "$basebuilddir"
 fi
 
 if [ -x "$vimexist" ] ; then
@@ -20,11 +20,10 @@ else
     exit 1
 fi
 
-
 #Define the function that install the AUR package in the system
 function installpackage() {
     #Download the package using git
-    cd "$HOME/Build" && git clone "https://aur.archlinux.org/$ipackage.git"
+    cd "$basebuilddir" && git clone "https://aur.archlinux.org/$ipackage.git"
     #Check if the git clone was sucesfull and decide what to do.
     if [ -f "$builddir/PKGBUILD" ]; then
         #Go to the package download directory and execute makepkg to build.
@@ -42,33 +41,30 @@ function installpackage() {
         fi
     else
         printf "\e[1;31m%-6s\e[m%s\n" "A error as ocurred, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
-		printf "\e[1;32m%-6s\e[m\n%s\n" "Removing the failed build directory..."
-		rm -rf "$builddir"
+        printf "\e[1;32m%-6s\e[m\n%s\n" "Removing the failed build directory..."
+        rm -rf "$builddir"
     fi
-
-
 }
 
 #Check if the package name passed is different to nothing and then start the installation
 if [ "$ipackage" ]; then
-	#check if the package Build DIR exist from a previous installation and the remove it.
-	if [ -d "$builddir" ]; then
-		read -p "The package build directory exists from a previous installation, do you want to delete it to conntinue? [Y/n]? " yn
-		#Take the answer from the user input and decide what to do.
-		if [ "$yn" = "y" ]; then
-			#Delete the existing package build dir
-			rm -rf "$builddir"
-			#Install the package
+    #check if the package Build DIR exist from a previous installation and the remove it.
+    if [ -d "$builddir" ]; then
+        read -p "The package build directory exists from a previous installation, do you want to delete it to conntinue? [Y/n]? " yn
+        #Take the answer from the user input and decide what to do.
+        if [ "$yn" = "y" ]; then
+            #Delete the existing package build dir
+            rm -rf "$builddir"
+            #Install the package
             installpackage
         else
-			printf "\e[1;31m%-6s\e[m%s\n" "You need to remove "$builddir" from your system, take a look an re-run the script."
-
-		fi
+            printf "\e[1;31m%-6s\e[m%s\n" "You need to remove "$builddir" from your system, take a look an re-run the script."
+        fi
     else
-		#Install the package
+        #Install the package
         installpackage
-	fi
-else
-	printf "\e[1;31m%-6s\e[m\n%s\n" "Please, pass a AUR package name to the script."
-fi
+    fi
 
+else
+    printf "\e[1;31m%-6s\e[m\n%s\n" "Please, pass a AUR package name to the script."
+fi
