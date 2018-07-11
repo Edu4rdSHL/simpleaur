@@ -37,7 +37,7 @@ function installpackage() {
             printf "\e[1;32m%-6s\e[m\n%s\n" "Removing build directory..."
             rm -rf "$builddir"
         else
-            printf "\e[1;32m%-6s\e[m\n%s\n" "Build completed."
+            printf "\e[1;32m%-6s\e[m\n%s\n" "Instalation completed."
         fi
     else
         printf "\e[1;31m%-6s\e[m%s\n" "A error as ocurred, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
@@ -65,7 +65,7 @@ if [ "$ipackage" ]; then
                 printf "\e[1;32m%-6s\e[m\n%s\n" "Removing build directory..."
                 rm -rf "$builddir"
             else
-                printf "\e[1;32m%-6s\e[m\n%s\n" "Build completed."
+                printf "\e[1;32m%-6s\e[m\n%s\n" "Instalation completed."
             fi
 
         #Install the package from a new downloaded PKGBUILD
