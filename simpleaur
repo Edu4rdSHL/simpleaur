@@ -2,7 +2,7 @@
 # install AUR packages
 ipackage="$1" #Take the package name from the first ARG passed.
 basebuilddir="$HOME/.simpleaur/Build" #Define the base Build DIR
-builddir="$HOME/.simpleaur/Build/$ipackage" #Define the package Build DIR
+builddir="$basebuilddir/$ipackage" #Define the package Build DIR
 vimexist=$(which vim 2> /dev/null)
 
 #Check if the base Build DIR exists, if not create it.
@@ -37,7 +37,7 @@ function installpackage() {
             printf "\e[1;32m%-6s\e[m\n%s\n" "Removing build directory..."
             rm -rf "$builddir"
         else
-            printf "\e[1;32m%-6s\e[m\n%%s\n" "Build completed."
+            printf "\e[1;32m%-6s\e[m\n%s\n" "Build completed."
         fi
     else
         printf "\e[1;31m%-6s\e[m%s\n" "A error as ocurred, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
