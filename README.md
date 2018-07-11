@@ -6,10 +6,10 @@ A script for install packages from AUR that doesn't require extra dependences, o
 
 # Usage
 <b>For instalations: </b>
-<code>./simpleaur package-to-install</code></br>
+<code>./simpleaur package1 package2 package3 ...</code></br>
 
 <b>For search: </b>
-<code>./simplesearch package-to-search</code></br>
+<code>./simplesearch text-to-search</code></br>
 
 <b>For updated check: </b>
 <code>./simplecheck</code>
