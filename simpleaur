@@ -29,9 +29,7 @@ done
 
 # Check PKGBUILDs.
 for ipackage in "$@"; do
-    cd "$basebuilddir/$ipackage"
-    read -s -r -n 1 -p "View PKGBUILD for ${ipackage}? [y/n]"$'\n' answer
-    [[ "${answer,,}" =~ ^(yes|y)$ ]] && "$EDITOR" PKGBUILD
+    cd "$basebuilddir/$ipackage" && ${EDITOR} PKGBUILD || exit
 done
 
 cd "$basebuilddir"
