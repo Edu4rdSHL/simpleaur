@@ -3,11 +3,23 @@
 ipackage="$1" #Take the package name from the first ARG passed.
 basebuilddir="$HOME/Build" #Define the base Build DIR
 builddir="$HOME/Build/$ipackage" #Define the package Build DIR
+vimexist=$(which vim 2> /dev/null)
 
 #Check if the base Build DIR exists, if not create it.
 if [ ! -d "$basebuilddir" ]; then
     mkdir "$basebuilddir"
 fi
+
+if [ -x "$vimexist" ] ; then
+    continue
+else
+    printf "\e[1;31m%-6s\e[m\n%s\n" "Error: vim is needed to see PKGBUILD and was not found in ($PATH).
+
+
+    Install VIM using: pacman -S vim"
+    exit 1
+fi
+
 
 #Define the function that install the AUR package in the system
 function installpackage() {
