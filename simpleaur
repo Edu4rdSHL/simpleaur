@@ -1,8 +1,6 @@
 #!/bin/sh
 # install AUR packages
-ipackage="$1" #Take the package name from the first ARG passed.
 basebuilddir="$HOME/.simpleaur/Build" #Define the base Build DIR
-builddir="$basebuilddir/$ipackage" #Define the package Build DIR
 vimexist=$(which vim 2> /dev/null)
 
 #Check if the base Build DIR exists, if not create it.
@@ -10,75 +8,48 @@ if [ ! -d "$basebuilddir" ]; then
     mkdir -p "$basebuilddir"
 fi
 
-if [ -x "$vimexist" ] ; then
-    continue
-else
-    printf "\e[1;31m%-6s\e[m\n%s\n" "Error: vim is needed to see PKGBUILD and was not found in ($PATH).
-
-
-    Install VIM using: pacman -S vim"
-    exit 1
+if [[ "$@" ]]; then
+    cd "$basebuilddir" || exit
 fi
 
-#Define the function that install the AUR package in the system
-function installpackage() {
-    #Download the package using git
-    cd "$basebuilddir" && git clone "https://aur.archlinux.org/$ipackage.git"
-    #Check if the git clone was sucesfull and decide what to do.
-    if [ -f "$builddir/PKGBUILD" ]; then
-        #Go to the package download directory and execute makepkg to build.
-        cd "$builddir" && ${EDITOR:-vim} PKGBUILD || exit
-        makepkg -sci && cd - &>/dev/null
+# Download the PKGBUILDs.
+for ipackage in "$@"; do
+    git clone "https://aur.archlinux.org/${ipackage}.git"
+done
 
-        #Ask to the user if want to remove the directory created for git
-        read -p "Remove build directory? [Y/n]? " yn
-        #Take the answer from the user input and decide what to do.
-        if [ "$yn" = "y" ]; then
-            printf "\e[1;32m%-6s\e[m\n%s\n" "Removing build directory..."
-            rm -rf "$builddir"
-        else
-            printf "\e[1;32m%-6s\e[m\n%s\n" "Instalation completed."
-        fi
-    else
-        printf "\e[1;31m%-6s\e[m%s\n" "A error as ocurred, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
-        printf "\e[1;32m%-6s\e[m\n%s\n" "Removing the failed build directory..."
-        rm -rf "$builddir"
-    fi
-}
 
-#Check if the package name passed is different to nothing and then start the installation
-if [ "$ipackage" ]; then
-    #check if the package Build DIR exist from a previous installation and the remove it.
-    if [ -d "$builddir" ]; then
-        read -p "The package build directory exists from a previous installation, do you want to use the existing PKGBUILD to continue? [Y/n]? " yn
-        #Take the answer from the user input and decide what to do.
-        if [ "$yn" = "y" ]; then
-            #Go to build dir and continue the instalation
-            cd "$builddir"
-            #Install the package
-            makepkg -sci
+# Check PKGBUILDs.
+for ipackage in "$@"; do
+    cd "$basebuilddir/$ipackage"
+    read -s -r -n 1 -p "View PKGBUILD for ${ipackage}? [y/n]"$'\n' answer
+    [[ "${answer,,}" =~ ^(yes|y)$ ]] && "$EDITOR" PKGBUILD
+done
 
+cd "$basebuilddir"
+
+# Install packages.
+for ipackage in "$@"; do
+    #Check if PKGBUILD exist
+    if [ -f "$ipackage/PKGBUILD" ]; then
+        cd "$ipackage"
+        makepkg -sci
+        if [ "$?" -eq 0 ]; then
             #Ask to the user if want to remove the directory created for git
             read -p "Remove build directory? [Y/n]? " yn
             #Take the answer from the user input and decide what to do.
             if [ "$yn" = "y" ]; then
                 printf "\e[1;32m%-6s\e[m\n%s\n" "Removing build directory..."
-                rm -rf "$builddir"
+                rm -rf "$basebuilddir/$ipackage"
             else
                 printf "\e[1;32m%-6s\e[m\n%s\n" "Instalation completed."
             fi
-
-        #Install the package from a new downloaded PKGBUILD
         else
-            printf "\e[1;32m%-6s\e[m\n%s\n" "Removing the existing build directory and using a new PKGBUILD..."
-            rm -rf "$builddir"
-            installpackage
+            printf "\e[1;31m%-6s\e[m%s\n" "Installation not completed."
         fi
+        cd "$basebuilddir"
     else
-        #Install the package
-        installpackage
+        printf "\e[1;31m%-6s\e[m%s\n" "The PKGBUILD file for $ipackage does not exist, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
+        printf "\e[1;32m%-6s\e[m\n%s\n" "Removing the failed build directory..."
+        rm -rf "$basebuilddir/$ipackage"
     fi
-
-else
-    printf "\e[1;31m%-6s\e[m\n%s\n" "Please, pass a AUR package name to the script."
-fi
+done
