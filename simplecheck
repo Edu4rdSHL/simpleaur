@@ -12,12 +12,12 @@ elif [ ! -f "$simplesearchlocal" ] && [ ! -f "$simplesearchglobal" ]; then
     exit
 else
     if [ -f "$simplesearchlocal" ]; then
-        printf "\n\e[1;32m%-6s\e[m\n%s\n" "The following packages are availables for update, you can update one to one using: simpleaur package_name"
+        printf "\n\e[1;32m%-6s\e[m\n%s\n" "The following packages are availables for update, you can update them using: simpleaur package1 package2 package3"
         for aurpkg in $(pacman -Qmq |grep -v 'git'); do ./simplesearch "$aurpkg" |grep "installed:"; done
         exit
 
     elif [ -f "$simplesearchglobal" ]; then
-        printf "\n\e[1;32m%-6s\e[m\n%s\n" "The following packages are availables for update, you can update one to one using: simpleaur package_name"
+        printf "\n\e[1;32m%-6s\e[m\n%s\n" "The following packages are availables for update, you can update them using: simpleaur package1 package2 package3 ..."
         for aurpkg in $(pacman -Qmq |grep -v 'git'); do simplesearch "$aurpkg" |grep "installed:"; done
         exit
     fi
