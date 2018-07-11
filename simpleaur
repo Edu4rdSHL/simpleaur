@@ -1,7 +1,14 @@
 #!/bin/sh
 # install AUR packages
-basebuilddir="$HOME/.simpleaur/Build" #Define the base Build DIR
-vimexist=$(which vim 2> /dev/null)
+basebuilddir="$HOME/.simpleaur/Build"
+pacmanexist=$(which pacman 2> /dev/null)
+
+#Make sure that you are using an ArchLinux system
+if [ -x "$pacmanexist" ]; then
+    continue
+else
+    printf "\e[1;31m%-6s\e[m%s\n" "You are not using ArchLinux, pacman was not found in ($PATH)"
+fi
 
 #Check if the base Build DIR exists, if not create it.
 if [ ! -d "$basebuilddir" ]; then
@@ -10,6 +17,8 @@ fi
 
 if [[ "$@" ]]; then
     cd "$basebuilddir" || exit
+else
+    printf "\e[1;31m%-6s\e[m%s\n" "Please, pass AUR package(s) name(s) to the simpleaur."
 fi
 
 # Download the PKGBUILDs.
