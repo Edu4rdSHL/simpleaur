@@ -28,7 +28,7 @@ function installpackage() {
     if [ -f "$builddir/PKGBUILD" ]; then
         #Go to the package download directory and execute makepkg to build.
         cd "$builddir" && ${EDITOR:-vim} PKGBUILD || exit
-        makepkg -si && cd - &>/dev/null
+        makepkg -sci && cd - &>/dev/null
 
         #Ask to the user if want to remove the directory created for git
         read -p "Remove build directory? [Y/n]? " yn
@@ -50,15 +50,29 @@ function installpackage() {
 if [ "$ipackage" ]; then
     #check if the package Build DIR exist from a previous installation and the remove it.
     if [ -d "$builddir" ]; then
-        read -p "The package build directory exists from a previous installation, do you want to delete it to conntinue? [Y/n]? " yn
+        read -p "The package build directory exists from a previous installation, do you want to use the existing PKGBUILD to continue? [Y/n]? " yn
         #Take the answer from the user input and decide what to do.
         if [ "$yn" = "y" ]; then
-            #Delete the existing package build dir
-            rm -rf "$builddir"
+            #Go to build dir and continue the instalation
+            cd "$builddir"
             #Install the package
-            installpackage
+            makepkg -sci
+
+            #Ask to the user if want to remove the directory created for git
+            read -p "Remove build directory? [Y/n]? " yn
+            #Take the answer from the user input and decide what to do.
+            if [ "$yn" = "y" ]; then
+                printf "\e[1;32m%-6s\e[m\n%s\n" "Removing build directory..."
+                rm -rf "$builddir"
+            else
+                printf "\e[1;32m%-6s\e[m\n%s\n" "Build completed."
+            fi
+
+        #Install the package from a new downloaded PKGBUILD
         else
-            printf "\e[1;31m%-6s\e[m%s\n" "You need to remove "$builddir" from your system, take a look an re-run the script."
+            printf "\e[1;32m%-6s\e[m\n%s\n" "Removing the existing build directory and using a new PKGBUILD..."
+            rm -rf "$builddir"
+            installpackage
         fi
     else
         #Install the package
