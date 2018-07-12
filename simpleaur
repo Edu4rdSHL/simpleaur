@@ -18,7 +18,7 @@ fi
 if [[ "$@" ]]; then
     cd "$basebuilddir" || exit
 else
-    printf "\e[1;31m%-6s\e[m%s\n" "Please, pass AUR package(s) name(s) to the simpleaur."
+    printf "\e[1;31m%-6s\e[m%s\n" "Please, pass AUR package(s) name(s) to simpleaur."
 fi
 
 # Download the PKGBUILDs.
