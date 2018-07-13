@@ -7,7 +7,7 @@ pacmanexist=$(which pacman 2> /dev/null)
 if [ -x "$pacmanexist" ]; then
     continue
 else
-    printf "\e[1;31m%-6s\e[m%s\n" "You are not using ArchLinux, pacman was not found in ($PATH)"
+    printf "\n\e[1;31m%-6s\e[m%s\n" "Error: You are not using ArchLinux, pacman was not found in ($PATH)"
 fi
 
 #Check if the base Build DIR exists, if not create it.
@@ -18,7 +18,7 @@ fi
 if [[ "$@" ]]; then
     cd "$basebuilddir" || exit
 else
-    printf "\e[1;31m%-6s\e[m%s\n" "Please, pass AUR package(s) name(s) to simpleaur."
+    printf "\n\e[1;31m%-6s\e[m%s\n" "Error: Please, pass AUR package(s) name(s) to simpleaur."
 fi
 
 # Download the PKGBUILDs.
@@ -45,18 +45,18 @@ for ipackage in "$@"; do
             read -p "Remove build directory? [Y/n]? " yn
             #Take the answer from the user input and decide what to do.
             if [ "$yn" = "y" ]; then
-                printf "\e[1;32m%-6s\e[m\n%s\n" "Removing build directory..."
+                printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing build directory..."
                 rm -rf "$basebuilddir/$ipackage"
             else
-                printf "\e[1;32m%-6s\e[m\n%s\n" "Instalation completed."
+                printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Instalation completed."
             fi
         else
-            printf "\e[1;31m%-6s\e[m%s\n" "Installation not completed."
+            printf "\n\e[1;31m%-6s\e[m%s\n" "Info: Installation not completed."
         fi
         cd "$basebuilddir"
     else
-        printf "\e[1;31m%-6s\e[m%s\n" "The PKGBUILD file for $ipackage does not exist, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
-        printf "\e[1;32m%-6s\e[m\n%s\n" "Removing the failed build directory..."
+        printf "\n\e[1;31m%-6s\e[m%s\n" "Error: The PKGBUILD file for [ $ipackage ] does not exist, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
+        printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing the failed build directory..."
         rm -rf "$basebuilddir/$ipackage"
     fi
 done
