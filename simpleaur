@@ -21,9 +21,25 @@ else
     printf "\n\e[1;31m%-6s\e[m%s\n" "Error: Please, pass AUR package(s) name(s) to simpleaur."
 fi
 
-# Download the PKGBUILDs.
+# Check if the package was already downloaded and then download the PKGBUILDs accordly to user needs.
 for ipackage in "$@"; do
-    git clone "https://aur.archlinux.org/${ipackage}.git"
+    if [ -d "$basebuilddir/$ipackage" ]; then
+        printf "\n\e[1;32m%-6s\e[m\n%s\n" "PKGBUILD for [ '$ipackage' ] exist in the [ '$basebuilddir/$ipackage' ] directory, if you want to update the package because an update was found by simplecheck, then you need remove the existing directory to update the package, otherwise you are reinstaling the same package version that's already installed."
+        read -p "Remove the [ '$basebuilddir/$ipackage' ] directory? [Y/n] " rmolddir
+        if [ "$rmolddir" = "y" ]; then
+            printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: removing the old directory..."
+            rm -rf "$basebuilddir/$ipackage"
+            git clone "https://aur.archlinux.org/${ipackage}.git"
+        elif [ "$rmolddir" = "n" ]; then
+            continue
+        else
+            printf "\n\e[1;32m%-6s\e[m\n%s\n" "Wrong option, continuing..."
+            continue
+        fi
+    else
+        git clone "https://aur.archlinux.org/${ipackage}.git"
+    fi
+
 done
 
 
