@@ -57,7 +57,7 @@ for ipackage in "$@"; do
     #Check if PKGBUILD exist
     if [ -f "$ipackage/PKGBUILD" ]; then
         cd "$ipackage"
-        makepkg -sci
+        makepkg -srci
         if [ "$?" -eq 0 ]; then
             #Ask to the user if want to remove the directory created for git
             read -p "Remove build directory? [Y/n]? " yn
