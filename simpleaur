@@ -47,7 +47,7 @@ done
 for ipackage in "$@"; do
     cd "$basebuilddir/$ipackage"
     read -s -r -n 1 -p "View PKGBUILD for [ "$ipackage" ]? [Y/n] "$'\n' answer
-    [[ "${answer,,}" =~ ^(yes|y)$ ]] && ${$EDITOR} PKGBUILD
+    [[ "${answer,,}" =~ ^(yes|y)$ ]] && ${EDITOR} PKGBUILD
 done
 
 cd "$basebuilddir"
