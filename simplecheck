@@ -1,24 +1,10 @@
 #!/usr/bin/bash
 # Script for check package updates from AUR
-pacmaninstalled="/usr/bin/pacman"
-simplesearchlocal="./simplesearch"
-simplesearchglobal="/usr/bin/simplesearch"
+cowerinstalled=$(which cower 2> /dev/null)
 
-if [ ! -f "$pacmaninstalled" ]; then
-    printf "\e[1;31m%-6s\e[m%s\n" "You are not using ArchLinux (pacman not found in $pacmaninstalled)"
-    exit
-elif [ ! -f "$simplesearchlocal" ] && [ ! -f "$simplesearchglobal" ]; then
-    printf "\e[1;31m%-6s\e[m%s\n" "simplesearch not found, make sure that you have the simplesearch script in the current folder or in /usr/bin/simplesearch"
-    exit
+if [ -x "$cowerinstalled" ]; then
+    printf "\n\e[1;32m%-6s\e[m\n%s\n" "The following packages are availables for update, you can update them using: simpleaur package1 package2 package3"
+    cower -u
 else
-    if [ -f "$simplesearchlocal" ]; then
-        printf "\n\e[1;32m%-6s\e[m\n%s\n" "The following packages are availables for update, you can update them using: simpleaur package1 package2 package3"
-        for aurpkg in $(pacman -Qmq |grep -v 'git'); do ./simplesearch "$aurpkg" |grep "installed:"; done
-        exit
-
-    elif [ -f "$simplesearchglobal" ]; then
-        printf "\n\e[1;32m%-6s\e[m\n%s\n" "The following packages are availables for update, you can update them using: simpleaur package1 package2 package3 ..."
-        for aurpkg in $(pacman -Qmq |grep -v 'git'); do simplesearch "$aurpkg" |grep "installed:"; done
-        exit
-    fi
+    printf "\e[1;31m%-6s\e[m%s\n" "Please, install cower first running in your terminal:  gpg --recv-keys 1EB2638FF56C0C53 && simpleaur cower"
 fi
