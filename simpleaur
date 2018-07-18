@@ -2,7 +2,16 @@
 # install AUR packages
 basebuilddir="$HOME/.simpleaur/Build"
 pacmanexist=$(which pacman 2> /dev/null)
+lockfile="$basebuilddir/simpleaur.lock"
 
+#Prevent two instances running at same time
+if [ -f "$lockfile" ]; then
+    printf "\n\e[1;31m%-6s\e[m%s\n" "simpleaur is running, leaving."
+    printf "\n\e[1;31m%-6s\e[m%s\n" "If you are sure that simpleaur is not running, delete [ '$lockfile' ]"
+    exit
+else
+    touch "$lockfile"
+fi
 #Make sure that you are using an ArchLinux system
 if [ -x "$pacmanexist" ]; then
     continue
@@ -39,7 +48,6 @@ for ipackage in "$@"; do
     else
         git clone "https://aur.archlinux.org/${ipackage}.git"
     fi
-
 done
 
 
@@ -78,3 +86,5 @@ for ipackage in "$@"; do
         rm -rf "$basebuilddir/$ipackage"
     fi
 done
+rm "$lockfile"
+exit
