@@ -93,5 +93,6 @@ for ipackage in "$@"; do
         printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing the failed build directory..."
         rm -rf "$basebuilddir/$ipackage"
     fi
+rm "$lockfile"
 done
 exit
