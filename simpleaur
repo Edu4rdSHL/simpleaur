@@ -4,6 +4,14 @@ basebuilddir="$HOME/.simpleaur/Build"
 pacmanexist=$(which pacman 2> /dev/null)
 lockfile="$basebuilddir/simpleaur.lock"
 
+ctrl_c() {
+    printf "\n\n\e[1;31m%-6s\e[m%s\n" "Keyboard Interrupt detected, removing lock file and leaving..."
+    rm "$lockfile"
+    exit
+}
+
+trap ctrl_c SIGINT
+
 #Prevent two instances running at same time
 if [ -f "$lockfile" ]; then
     printf "\n\e[1;31m%-6s\e[m%s\n" "simpleaur is running, leaving."
@@ -86,5 +94,4 @@ for ipackage in "$@"; do
         rm -rf "$basebuilddir/$ipackage"
     fi
 done
-rm "$lockfile"
 exit
