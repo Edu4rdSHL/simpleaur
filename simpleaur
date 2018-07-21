@@ -75,24 +75,27 @@ for ipackage in "$@"; do
         cd "$ipackage"
         makepkg -srci
         if [ "$?" -eq 0 ]; then
-            #Ask to the user if want to remove the directory created for git
-            read -p "Remove build directory? [Y/n]? " yn
-            #Take the answer from the user input and decide what to do.
-            if [ "$yn" = "y" ]; then
-                printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing build directory..."
-                rm -rf "$basebuilddir/$ipackage"
-            else
-                printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Instalation completed."
-            fi
+            cd "$basebuilddir"
+            continue
         else
             printf "\n\e[1;31m%-6s\e[m%s\n" "Info: Installation not completed."
+            cd "$basebuilddir"
         fi
-        cd "$basebuilddir"
     else
         printf "\n\e[1;31m%-6s\e[m%s\n" "Error: The PKGBUILD file for [ $ipackage ] does not exist, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
         printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing the failed build directory..."
         rm -rf "$basebuilddir/$ipackage"
     fi
-rm "$lockfile"
 done
+
+#Ask to the user if want to remove the directory created for git
+read -p "Remove previously compiled packages? [Y/n]? " yn
+#Take the answer from the user input and decide what to do.
+if [ "$yn" = "y" ]; then
+    printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing build directory..."
+    rm -rf "$basebuilddir/*"
+else
+    printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Instalation completed."
+fi
+rm -f "$lockfile"
 exit
