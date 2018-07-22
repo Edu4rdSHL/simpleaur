@@ -25,6 +25,8 @@ if [ -x "$pacmanexist" ]; then
     continue
 else
     printf "\n\e[1;31m%-6s\e[m%s\n" "Error: You are not using ArchLinux, pacman was not found in ($PATH)"
+    rm "$lockfile"
+    exit
 fi
 
 #Check if the base Build DIR exists, if not create it.
@@ -36,6 +38,8 @@ if [[ "$@" ]]; then
     cd "$basebuilddir" || exit
 else
     printf "\n\e[1;31m%-6s\e[m%s\n" "Error: Please, pass AUR package(s) name(s) to simpleaur."
+    rm "$lockfile"
+    exit
 fi
 
 # Check if the package was already downloaded and then download the PKGBUILDs accordly to user needs.
@@ -73,7 +77,7 @@ for ipackage in "$@"; do
     #Check if PKGBUILD exist
     if [ -f "$ipackage/PKGBUILD" ]; then
         cd "$ipackage"
-        makepkg -srci
+        makepkg -srci --noconfirm
         if [ "$?" -eq 0 ]; then
             cd "$basebuilddir"
             continue
