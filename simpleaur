@@ -85,7 +85,7 @@ for ipackage in "$@"; do
     #Check if PKGBUILD exist
     if [ -f "$ipackage/PKGBUILD" ]; then
         cd "$ipackage" || exit
-        if makepkg -srci ; then
+        if makepkg -sci ; then
             cd "$basebuilddir" || exit
             printf '\e[1;32m%-6s\e[m\n\n' "The package [ $ipackage ] has been installed"
             continue
