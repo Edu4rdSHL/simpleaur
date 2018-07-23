@@ -1,9 +1,9 @@
 #!/usr/bin/bash
 # Script for search packages from AUR
-cowerinstalled="/usr/bin/cower"
+cowerinstalled=$(command -v cower 2> /dev/null)
 spackage=( "$@" )
 if [ ! -f "$cowerinstalled" ]; then
-    printf "\e[1;31m%-6s\e[m%s\n" "Please, install cower first running in your terminal:  gpg --recv-keys 1EB2638FF56C0C53 && simpleaur cower"
+    printf "\\e[1;31m%-6s\\e[m\\n" "Please, install cower first running in your terminal:  gpg --recv-keys 1EB2638FF56C0C53 && simpleaur cower"
 else
     if [ "${#spackage[@]}" -ge 0 ]; then
         cower -sc "${spackage[@]}"
