@@ -110,9 +110,9 @@ if [ "$yn" = "y" ] || [ "$yn" = "Y" ] ; then
     for ipackage in "$@"; do
         rm -rf "$basebuilddir/$ipackage"
     done
-    printf "\\e[1;32m%-6s\\e[m\\n" "Info: Instalation completed."
+    printf "\\e[1;32m%-6s\\e[m\\n" "Info: Exiting"
 else
-    printf "\\n\\e[1;32m%-6s\\e[m\\n" "Info: Instalation completed."
+    printf "\\n\\e[1;32m%-6s\\e[m\\n" "Info: Exiting"
 fi
 rm -f "$lockfile"
 exit
