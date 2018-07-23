@@ -12,6 +12,11 @@ ctrl_c() {
 
 trap ctrl_c SIGINT
 
+#Check if the base Build DIR exists, if not create it.
+if [ ! -d "$basebuilddir" ]; then
+    mkdir -p "$basebuilddir"
+fi
+
 #Prevent two instances running at same time
 if [ -f "$lockfile" ]; then
     printf "\n\e[1;31m%-6s\e[m%s\n" "simpleaur is running, leaving."
@@ -20,6 +25,7 @@ if [ -f "$lockfile" ]; then
 else
     touch "$lockfile"
 fi
+
 #Make sure that you are using an ArchLinux system
 if [ -x "$pacmanexist" ]; then
     continue
@@ -27,11 +33,6 @@ else
     printf "\n\e[1;31m%-6s\e[m%s\n" "Error: You are not using ArchLinux, pacman was not found in ($PATH)"
     rm "$lockfile"
     exit
-fi
-
-#Check if the base Build DIR exists, if not create it.
-if [ ! -d "$basebuilddir" ]; then
-    mkdir -p "$basebuilddir"
 fi
 
 if [[ "$@" ]]; then
@@ -97,7 +98,7 @@ read -p "Remove previously compiled packages? [Y/n]? " yn
 #Take the answer from the user input and decide what to do.
 if [ "$yn" = "y" ]; then
     printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing build directory..."
-    rm -rf "$basebuilddir/*"
+    rm -rf "$basebuilddir"
 else
     printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Instalation completed."
 fi
