@@ -100,6 +100,7 @@ if [ "$yn" = "y" ]; then
     printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing previously compiled packages..."
     for ipackage in "$@"; do
         rm -rf "$basebuilddir/$ipackage"
+        printf "\n\e[1;32m%-6s\e[m\n%s\n" "Finished."
     done
 else
     printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Instalation completed."
