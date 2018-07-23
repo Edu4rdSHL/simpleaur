@@ -5,7 +5,7 @@ pacmanexist=$(command -v pacman 2> /dev/null)
 lockfile="$basebuilddir/simpleaur.lock"
 
 ctrl_c() {
-    printf "\\n\\e[1;31m%-6s\\e[m\\n" "Keyboard Interrupt detected, removing lock file and leaving..."
+    printf '\n\e[1;31m%-6s\e[m\n' 'Keyboard Interrupt detected, removing lock file and leaving...'
     rm "$lockfile"
     exit
 }
@@ -16,7 +16,7 @@ trap ctrl_c 2
 if [ -x "$pacmanexist" ]; then
     printf ""
 else
-    printf "\\n\\e[1;31m%-6s\\e[m\\n" "Error: You are not using ArchLinux, pacman was not found in ($PATH)"
+    printf '\n\e[1;31m%-6s\e[m\n' "Error: You are not using ArchLinux, pacman was not found in ($PATH)"
     rm "$lockfile"
     exit
 fi
@@ -28,15 +28,15 @@ fi
 
 #Prevent two instances running at same time
 if [ -f "$lockfile" ]; then
-    printf "\\n\\e[1;31m%-6s\\e[m\\n" "simpleaur is running, leaving."
-    printf "\\n\\e[1;31m%-6s\\e[m\\n" "If you are sure that simpleaur is not running, delete [ '$lockfile' ]"
+    printf '\n\e[1;31m%-6s\e[m\n' 'simpleaur is running, leaving.'
+    printf '\n\e[1;31m%-6s\e[m\n' "If you are sure that simpleaur is not running, delete [ $lockfile ]"
     exit
 else
     touch "$lockfile"
 fi
 
 if [ -z "$*" ] ; then
-    printf "\\n\\e[1;31m%-6s\\e[m\\n" "Error: Please, pass AUR package(s) name(s) to simpleaur."
+    printf '\n\e[1;31m%-6s\e[m\n' 'Error: Please, pass AUR package(s) name(s) to simpleaur.'
     rm "$lockfile"
     exit
 else
@@ -46,18 +46,18 @@ fi
 # Check if the package was already downloaded and then download the PKGBUILDs accordly to user needs.
 for ipackage in "$@"; do
     if [ -d "$basebuilddir/$ipackage" ]; then
-        printf "\\n\\e[1;32m%-6s\\e[m\\n" "PKGBUILD for [ '$ipackage' ] exist in the [ '$basebuilddir/$ipackage' ] directory, if you want to update the package because an update was found by simplecheck, then you need remove the existing directory to update the package, otherwise you are reinstaling the same package version that's already installed."
-        printf "\\n\\e[1;33m%-6s\\e[m" "Remove the [ '$basebuilddir/$ipackage' ] directory? [Y/n] "
+        printf '\n\e[1;32m%-6s\e[m\n' "PKGBUILD for [ $ipackage ] exist in the [ $basebuilddir/$ipackage ] directory, if you want to update the package because an update was found by simplecheck, then you need remove the existing directory to update the package, otherwise you are reinstaling the same package version that's already installed."
+        printf '\n\e[1;33m%-6s\e[m' "Remove the [ $basebuilddir/$ipackage ] directory? [Y/n] "
         read -r rmolddir
         if [ "$rmolddir" = "y" ] || [ "$rmolddir" = "Y" ] ; then
-            printf "\\n\\e[1;32m%-6s\\e[m\\n" "Info: removing the old directory and getting the new sources..."
+            printf '\n\e[1;32m%-6s\e[m\n' 'Info: removing the old directory and getting the new sources...'
             rm -rf "$basebuilddir/$ipackage"
             git clone "https://aur.archlinux.org/${ipackage}.git"
-			continue
+            continue
         elif [ "$rmolddir" = "n" ]; then
             continue
         else
-            printf "\\n\\e[1;33m%-6s\\e[m\\n" "Warning: Wrong option, continuing..."
+            printf '\n\e[1;33m%-6s\e[m\n' 'Warning: Wrong option, continuing...'
             continue
         fi
     else
@@ -68,13 +68,13 @@ done
 # Check PKGBUILDs.
 for ipackage in "$@"; do
     cd "$basebuilddir/$ipackage" || exit
-    printf "\\e[1;33m%-6s\\e[m" "View PKGBUILD for [ $ipackage ]? [Y/n] "
+    printf '\e[1;33m%-6s\e[m' "View PKGBUILD for [ $ipackage ]? [Y/n] "
     read -r answer
     if [ "$answer" = "y" ] || [ "$answer" = "Y" ]  ; then
-		${EDITOR} PKGBUILD
-		continue
+        ${EDITOR} PKGBUILD
+        continue
     else
-		continue
+        continue
     fi
 done
 
@@ -87,32 +87,32 @@ for ipackage in "$@"; do
         cd "$ipackage" || exit
         if makepkg -srci ; then
             cd "$basebuilddir" || exit
-            printf "\\e[1;32m%-6s\\e[m\\n\\n" "The package [ $ipackage ] has been installed"
+            printf '\e[1;32m%-6s\e[m\n\n' "The package [ $ipackage ] has been installed"
             continue
         else
-            printf "\\n\\e[1;31m%-6s\\e[m\\n" "Error: Installation not completed."
+            printf '\n\e[1;31m%-6s\e[m\n' 'Error: Installation not completed.'
             cd "$basebuilddir" || exit
             continue
         fi
     else
-        printf "\\n\\e[1;31m%-6s\\e[m\\n" "Error: The PKGBUILD file for [ $ipackage ] does not exist, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
-        printf "\\n\\e[1;32m%-6s\\e[m\\n" "Info: Removing the failed build directory..."
+        printf '\n\e[1;31m%-6s\e[m\n' "Error: The PKGBUILD file for [ $ipackage ] does not exist, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
+        printf '\n\e[1;32m%-6s\e[m\n' 'Info: Removing the failed build directory...'
         rm -rf "$basebuilddir/$ipackage"
     fi
 done
 
 #Ask to the user if want to remove the directory created for git
-printf "\\e[1;33m%-6s\\e[m" "Remove previously compiled packages? [Y/n]? "
+printf '\e[1;33m%-6s\e[m' 'Remove previously compiled packages? [Y/n]? '
 read -r yn
 #Take the answer from the user input and decide what to do.
 if [ "$yn" = "y" ] || [ "$yn" = "Y" ] ; then
-    printf "\\n\\e[1;32m%-6s\\e[m\\n" "Info: Removing previously compiled packages..."
+    printf '\n\e[1;32m%-6s\e[m\n' 'Info: Removing previously compiled packages...'
     for ipackage in "$@"; do
         rm -rf "$basebuilddir/$ipackage"
     done
-    printf "\\e[1;32m%-6s\\e[m\\n" "Info: Exiting"
+    printf '\e[1;32m%-6s\e[m\n' 'Info: Exiting'
 else
-    printf "\\n\\e[1;32m%-6s\\e[m\\n" "Info: Exiting"
+    printf '\n\e[1;32m%-6s\e[m\n' 'Info: Exiting'
 fi
 rm -f "$lockfile"
 exit
