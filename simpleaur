@@ -97,8 +97,10 @@ done
 read -p "Remove previously compiled packages? [Y/n]? " yn
 #Take the answer from the user input and decide what to do.
 if [ "$yn" = "y" ]; then
-    printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing build directory..."
-    rm -rf "$basebuilddir"
+    printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Removing previously compiled packages..."
+    for ipackage in "$@"; do
+        rm -rf "$basebuilddir/$ipackage"
+    done
 else
     printf "\n\e[1;32m%-6s\e[m\n%s\n" "Info: Instalation completed."
 fi
