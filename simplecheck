@@ -3,8 +3,8 @@
 cowerinstalled=$(command -v cower 2> /dev/null)
 
 if [ -x "$cowerinstalled" ]; then
-    printf "\\e[1;32m%-6s\\e[m\\n\\n" "The following packages are availables for update, you can update them using: simpleaur package1 package2 package3"
+    printf '\e[1;32m%-6s\e[m\n' 'The following packages are availables for update, you can update them using: simpleaur package1 package2 package3'
     cower -u
 else
-    printf "\\e[1;31m%-6s\\e[m\\n" "Please, install cower first running in your terminal:  gpg --recv-keys 1EB2638FF56C0C53 && simpleaur cower"
+    printf '\e[1;31m%-6s\e[m\n' 'Please, install cower first running in your terminal:  gpg --recv-keys 1EB2638FF56C0C53 && simpleaur cower'
 fi
