@@ -35,6 +35,7 @@ else
     touch "$lockfile"
 fi
 
+#Verify that package names are not empty
 if [ -z "$*" ] ; then
     printf '\n\e[1;31m%-6s\e[m\n' 'Error: Please, pass AUR package(s) name(s) to simpleaur.'
     rm "$lockfile"
