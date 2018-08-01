@@ -86,14 +86,25 @@ for ipackage in "$@"; do
     #Check if PKGBUILD exist
     if [ -f "$ipackage/PKGBUILD" ]; then
         cd "$ipackage" || exit
-        if makepkg -sci ; then
+        makepkg -sci
+        if pacman -Qq "$ipackage" &> /dev/null ; then
             cd "$basebuilddir" || exit
             printf '\e[1;32m%-6s\e[m\n\n' "The package [ $ipackage ] has been installed"
             continue
         else
-            printf '\n\e[1;31m%-6s\e[m\n' 'Error: Installation not completed.'
-            cd "$basebuilddir" || exit
-            continue
+            printf '\n\e[1;31m%-6s\e[m' "Error: Installation for the package [ $ipackage ] was not completed."
+            printf '\n\e[1;33m%-6s\e[m' "Do you want to continue? [Y/n] "
+            read -r answer
+            if [ "$answer" = "y" ] || [ "$answer" = "Y" ]  ; then
+                printf '\n\e[1;32m%-6s\e[m\n' 'Info: Removing the failed build directory...'
+                rm -rf "$basebuilddir/$ipackage"
+                cd "$basebuilddir"
+                continue
+            else
+                printf '\n\e[1;32m%-6s\e[m\n' 'Info: Removing the failed build directory...'
+                rm -rf "$basebuilddir/$ipackage"
+                break
+            fi
         fi
     else
         printf '\n\e[1;31m%-6s\e[m\n' "Error: The PKGBUILD file for [ $ipackage ] does not exist, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that."
