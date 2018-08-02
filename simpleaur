@@ -86,8 +86,7 @@ for ipackage in "$@"; do
     #Check if PKGBUILD exist
     if [ -f "$ipackage/PKGBUILD" ]; then
         cd "$ipackage" || exit
-        makepkg -sci
-        if pacman -Qq "$ipackage" &> /dev/null ; then
+        if makepkg -sci ; then
             cd "$basebuilddir" || exit
             printf '\e[1;32m%-6s\e[m\n\n' "The package [ $ipackage ] has been installed"
             continue
@@ -96,13 +95,10 @@ for ipackage in "$@"; do
             printf '\n\e[1;33m%-6s\e[m' "Do you want to continue? [Y/n] "
             read -r answer
             if [ "$answer" = "y" ] || [ "$answer" = "Y" ]  ; then
-                printf '\n\e[1;32m%-6s\e[m\n' 'Info: Removing the failed build directory...'
-                rm -rf "$basebuilddir/$ipackage"
-                cd "$basebuilddir"
+                cd "$basebuilddir" || exit
                 continue
             else
-                printf '\n\e[1;32m%-6s\e[m\n' 'Info: Removing the failed build directory...'
-                rm -rf "$basebuilddir/$ipackage"
+                printf '\e[1;32m%-6s\e[m\n' 'Info: finishing tasks...'
                 break
             fi
         fi
@@ -114,17 +110,17 @@ for ipackage in "$@"; do
 done
 
 #Ask to the user if want to remove the directory created for git
-printf '\e[1;33m%-6s\e[m' 'Remove previously compiled packages? [Y/n]? '
+printf '\e[1;33m%-6s\e[m' 'Remove previously compiled packages? [Y/n] '
 read -r yn
 #Take the answer from the user input and decide what to do.
 if [ "$yn" = "y" ] || [ "$yn" = "Y" ] ; then
-    printf '\n\e[1;32m%-6s\e[m\n' 'Info: Removing previously compiled packages...'
+    printf '\e[1;32m%-6s\e[m\n' 'Info: Removing previously compiled packages...'
     for ipackage in "$@"; do
         rm -rf "$basebuilddir/$ipackage"
     done
-    printf '\e[1;32m%-6s\e[m\n' 'Info: Exiting'
+    printf '\e[1;32m%-6s\e[m\n' 'Info: Leaving'
 else
-    printf '\n\e[1;32m%-6s\e[m\n' 'Info: Exiting'
+    printf '\e[1;32m%-6s\e[m\n' 'Info: Leaving'
 fi
 rm -f "$lockfile"
 exit
