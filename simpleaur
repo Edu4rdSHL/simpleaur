@@ -62,7 +62,7 @@ fi
 # Check if the package was already downloaded and then download the PKGBUILDs accordly to user needs.
 for ipackage in "$@"; do
     if [ -f "$basebuilddir/$ipackage/PKGBUILD" ]; then
-        printf "\n${GREEN}PKGBUILD for ${BLUE}[ $ipackage ] ${GREEN}exist in the ${BLUE}[ $basebuilddir/$ipackage ] ${GREEN}directory, pulling the git directory and reinstalling/updating the packages.\n"
+        printf "\n${GREEN}PKGBUILD for ${BLUE}[ $ipackage ] ${GREEN}exist in the ${BLUE}[ $basebuilddir/$ipackage ] ${GREEN}directory, pulling the git directory and reinstalling/updating the packages.${ALL_OFF}\n"
         cd "$basebuilddir/$ipackage" || exit
         git pull
         cd "$basebuilddir" || exit
