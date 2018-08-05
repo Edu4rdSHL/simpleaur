@@ -101,7 +101,6 @@ for ipackage in "$@"; do
                 cd "$basebuilddir" || exit
                 continue
             else
-                printf "${GREEN}Info: finishing tasks..."
                 break
             fi
         fi
@@ -113,6 +112,7 @@ for ipackage in "$@"; do
 done
 
 #Ask to the user if want to remove the directory created for git
+printf "\n${GREEN}Info: finishing tasks..."
 printf "\n${YELLOW}Remove previously compiled packages? [Y/n] ${ALL_OFF}"
 read -r yn
 #Take the answer from the user input and decide what to do.
