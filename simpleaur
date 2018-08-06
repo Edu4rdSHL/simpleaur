@@ -25,6 +25,7 @@ readonly ALL_OFF BOLD BLUE GREEN RED YELLOW
 ctrl_c() {
     printf "\n${RED}Keyboard Interrupt detected, removing lock file and leaving...\n"
     rm "$lockfile"
+    printf "${ALL_OFF}"
     exit
 }
 
@@ -125,5 +126,6 @@ if [ "$yn" = "y" ] || [ "$yn" = "Y" ] ; then
 else
     printf "${GREEN}Info: Leaving\n"
 fi
+printf "${ALL_OFF}"
 rm -f "$lockfile"
 exit
