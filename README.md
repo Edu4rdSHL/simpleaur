@@ -14,4 +14,4 @@ A script for install packages from AUR that doesn't require extra dependences, o
 <b>For updated check: </b>
 <code>./simplecheck</code>
 
-You are free to move the scripts to /usr/bin and then use it's from everywhere. If you are using ArchLinux, install the <b>simpleaur</b> package from the AUR.
+You are free to move the scripts to /usr/bin and then use it's from everywhere. If you are using ArchLinux, install the <b>simpleaur-git</b> package from the AUR.
