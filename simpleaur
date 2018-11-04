@@ -5,127 +5,118 @@ lockfile="$basebuilddir/simpleaur.lock"
 
 # prefer terminal safe colored and bold text when tput is supported - /usr/share/makepkg/util/message.sh
 if tput setaf 0 &>/dev/null; then
-    ALL_OFF="$(tput sgr0)"
-    BOLD="$(tput bold)"
-    BLUE="${BOLD}$(tput setaf 4)"
-    GREEN="${BOLD}$(tput setaf 2)"
-    RED="${BOLD}$(tput setaf 1)"
-    YELLOW="${BOLD}$(tput setaf 3)"
+  ALL_OFF="$(tput sgr0)"
+  BOLD="$(tput bold)"
+  BLUE="${BOLD}$(tput setaf 4)"
+  GREEN="${BOLD}$(tput setaf 2)"
+  RED="${BOLD}$(tput setaf 1)"
+  YELLOW="${BOLD}$(tput setaf 3)"
 else
-    ALL_OFF="\e[0m"
-    BOLD="\e[1m"
-    BLUE="${BOLD}\e[34m"
-    GREEN="${BOLD}\e[32m"
-    RED="${BOLD}\e[31m"
-    YELLOW="${BOLD}\e[33m"
+  ALL_OFF="\e[0m"
+  BOLD="\e[1m"
+  BLUE="${BOLD}\e[34m"
+  GREEN="${BOLD}\e[32m"
+  RED="${BOLD}\e[31m"
+  YELLOW="${BOLD}\e[33m"
 fi
 readonly ALL_OFF BOLD BLUE GREEN RED YELLOW
 
+function usage(){
+  printf "${RED}Usage:
+  simpleaur package1 package2        Install package1 and package2 from AUR
+  --help                             Show it dialog
+  --purge                            Delete all compiled packages in $basebuilddir\n"
+}
 
 ctrl_c() {
-    printf "\n${RED}Keyboard Interrupt detected, removing lock file and leaving...\n"
-    rm "$lockfile"
-    printf "${ALL_OFF}"
-    exit
+  printf "\n${RED}Keyboard Interrupt detected, removing lock file and leaving...\n"
+  rm "$lockfile"
+  printf "${ALL_OFF}"
+  exit
 }
 
 trap ctrl_c 2
 
+#Check for arguments passed to simpleaur
+if [ "$1" == "--purge" ]; then
+  rm -rf "$basebuilddir"/*
+  exit
+elif [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$*" ]; then
+  usage
+  printf "${ALL_OFF}"
+  exit
+else
+  cd "$basebuilddir" || exit
+fi
+
 #Make sure that you are using an ArchLinux system
 if ! command -v pacman > /dev/null; then
-    printf "\n${RED}Error: You are not using ArchLinux, pacman was not found in ($PATH)\n"
-    exit
+  printf "\n${RED}Error: You are not using ArchLinux, pacman was not found in ($PATH)\n"
+  exit
 fi
 
 #Check if the base Build DIR exists, if not create it.
 if [ ! -d "$basebuilddir" ]; then
-    mkdir -p "$basebuilddir"
+  mkdir -p "$basebuilddir"
 fi
 
 #Prevent two instances running at same time
 if [ -f "$lockfile" ]; then
-    printf "\n${RED}simpleaur is running, leaving.\n"
-    printf "\n${RED}If you are sure that simpleaur is not running, delete [ $lockfile ]\n"
-    exit
+  printf "\n${RED}simpleaur is running, leaving.\n"
+  printf "\n${RED}If you are sure that simpleaur is not running, delete [ $lockfile ]\n"
+  exit
 else
-    touch "$lockfile"
-fi
-
-#Verify that package names are not empty
-if [ -z "$*" ] ; then
-    printf "\n${RED}Error: Please, pass AUR package(s) name(s) to simpleaur.\n"
-    rm "$lockfile"
-    exit
-else
-    cd "$basebuilddir" || exit
+  touch "$lockfile"
 fi
 
 # Check if the package was already downloaded and then download the PKGBUILDs accordly to user needs.
 for ipackage in "$@"; do
-    if [ -f "$basebuilddir/$ipackage/PKGBUILD" ]; then
-        printf "\n${GREEN}PKGBUILD for ${BLUE}[ $ipackage ] ${GREEN}exist in the ${BLUE}[ $basebuilddir/$ipackage ] ${GREEN}directory, pulling the git directory and reinstalling/updating the packages.${ALL_OFF}\n"
-        cd "$basebuilddir/$ipackage" || exit
-        git pull
-        cd "$basebuilddir" || exit
-        continue
-    else
-        git clone "https://aur.archlinux.org/${ipackage}.git"
-    fi
+  if [ -f "$basebuilddir/$ipackage/PKGBUILD" ]; then
+    printf "\n${GREEN}PKGBUILD for ${BLUE}[ $ipackage ] ${GREEN}exist in the ${BLUE}[ $basebuilddir/$ipackage ] ${GREEN}directory, pulling the git directory and reinstalling/updating the packages.${ALL_OFF}\n"
+    cd "$basebuilddir/$ipackage" || exit
+    git pull
+    cd "$basebuilddir" || exit
+    continue
+  else
+    git clone "https://aur.archlinux.org/${ipackage}.git"
+  fi
 done
 
 # Check PKGBUILDs.
 for ipackage in "$@"; do
+  if [ -d "$basebuilddir/$ipackage" ] && [ -s "$basebuilddir/$ipackage/PKGBUILD" ]; then
     cd "$basebuilddir/$ipackage" || exit
-    printf "${BLUE}View PKGBUILD for [ $ipackage ]? [Y/n] ${ALL_OFF}"
+    printf "${BLUE}View PKGBUILD for [ $ipackage ] ? [Y/n] ${ALL_OFF}"
     read -r answer
     if [ "$answer" = "y" ] || [ "$answer" = "Y" ]  ; then
-        ${EDITOR} PKGBUILD
+      ${EDITOR} PKGBUILD
     fi
+  else
+    printf "${RED}The package ${YELLOW}[ $ipackage ] ${RED}does not exist in AUR, building the rest of the packages if exist.\n${ALL_OFF}"
+    rm -rf "$basebuilddir/$ipackage"
+  fi
 done
 
 cd "$basebuilddir" || exit
 
 # Install packages.
 for ipackage in "$@"; do
-    #Check if PKGBUILD exist
-    if [ -f "$ipackage/PKGBUILD" ]; then
-        cd "$ipackage" || exit
-        if makepkg -sci ; then
-            cd "$basebuilddir" || exit
-            printf "\n${GREEN}The package ${BLUE}[ $ipackage ] ${GREEN}has been installed.\n"
-            continue
-        else
-            printf "\n${RED}Error: Installation for the package ${BLUE}[ $ipackage ] ${RED}was not completed.\n"
-            printf "${YELLOW}Do you want to continue? [Y/n] ${ALL_OFF}"
-            read -r answer
-            if [ "$answer" = "y" ] || [ "$answer" = "Y" ]  ; then
-                cd "$basebuilddir" || exit
-                continue
-            else
-                break
-            fi
-        fi
+  if [ -d "$ipackage" ]; then
+    cd "$ipackage" || exit
+    if makepkg -sci ; then
+      cd "$basebuilddir" || exit
+      printf "\n${GREEN}The package ${BLUE}[ $ipackage ] ${GREEN}has been installed.\n"
+      continue
     else
-        printf "${RED}Error: The PKGBUILD file for the package ${YELLOW}[ $ipackage ] ${RED}does not exist, please check your internet connection and make sure that the AUR package name exists, you can use simplesearch for that.\n"
-        printf "${GREEN}Info: Removing the failed build directory...\n\n"
-        rm -rf "$basebuilddir/$ipackage"
+      printf "\n${RED}Error: Installation for the package ${BLUE}[ $ipackage ] ${RED}was not completed, building the rest of the packages if exist.\n${ALL_OFF}"
+      cd "$basebuilddir" || exit
     fi
+  fi
 done
 
 #Ask to the user if want to remove the directory created for git
-printf "\n${GREEN}Info: finishing tasks..."
-printf "\n${YELLOW}Remove previously compiled packages? [Y/n] ${ALL_OFF}"
-read -r yn
-#Take the answer from the user input and decide what to do.
-if [ "$yn" = "y" ] || [ "$yn" = "Y" ] ; then
-    printf "\n${GREEN}Info: Removing previously compiled packages...\n"
-    for ipackage in "$@"; do
-        rm -rf "$basebuilddir/$ipackage"
-    done
-    printf "${GREEN}Info: Leaving\n"
-else
-    printf "${GREEN}Info: Leaving\n"
-fi
-printf "${ALL_OFF}"
+printf "\n${GREEN}Info: finishing tasks...
+Deleting the simpleaur lockfile...
+Good bye${ALL_OFF}\n"
 rm -f "$lockfile"
 exit
