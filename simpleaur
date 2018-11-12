@@ -59,11 +59,11 @@ elif [ "$1" == "--purgepkg" ] || [ "$1" == "-pp" ]; then
   exit
 elif [ "$1" == "--download" ] || [ "$1" == "-d" ]; then
   for pkgname in "${@:2}"; do
-    curl -s -o "$pkgdown/PKGBUILD-$pkgname" "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=$pkgname"
+    curl -s -f -o "$pkgdown/PKGBUILD-$pkgname" "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=$pkgname"
     if [ "$?" -eq 0 ]; then
       printf "\n${GREEN}Your PKGBUILD for [ $pkgname ] was saved in: ${YELLOW}[ $pkgdown/PKGBUILD-$pkgname ].${ALL_OFF}\n"
     else
-      printf "\n${RED}Error: Failed to download the PKGBUILD for ${YELLOW}[ $pkgname ], make sure that you have internet connection and try again.${ALL_OFF}\n"
+      printf "\n${RED}Error: Failed to download the PKGBUILD for ${YELLOW}[ $pkgname ], ${RED}check the package name, your internet connection and try again.${ALL_OFF}\n"
     fi
   done
   printf "\n${GREEN}All done, leaving.${ALL_OFF}\n"
