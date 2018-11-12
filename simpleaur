@@ -1,6 +1,7 @@
 #!/bin/sh
 # install AUR packages
 basebuilddir="$HOME/.simpleaur/Build"
+pkgdown="$HOME/.simpleaur/pkgbuilds"
 lockfile="$basebuilddir/simpleaur.lock"
 
 # prefer terminal safe colored and bold text when tput is supported - /usr/share/makepkg/util/message.sh
@@ -23,9 +24,11 @@ readonly ALL_OFF BOLD BLUE GREEN RED YELLOW
 
 function usage(){
   printf "${RED}Usage:
-  simpleaur package1 package2        Install package1 and package2 from AUR
-  --help                             Show it dialog
-  --purge                            Delete all compiled packages in $basebuilddir\n"
+  simpleaur package1 package2        Install package1 and package2 from AUR.
+  --help, -h                         Show it dialog.
+  --purge, -p                        Delete all compiled packages in $basebuilddir.
+  --download, -d                     Download all PKGBUILDS of packages passed as arguments in $pkgdown.
+  --purgepkg, -pp                    Delete all downloaded PKGBUILDS in $pkgdown.${ALL_OFF}\n"
 }
 
 ctrl_c() {
@@ -37,13 +40,34 @@ ctrl_c() {
 
 trap ctrl_c 2
 
+#Check if the base Build DIR exists, if not create it.
+if [ ! -d "$basebuilddir" ]; then
+  mkdir -p "$basebuilddir"
+elif [ ! -d "$pkgdown" ]; then
+  mkdir -p "$pkgdown"
+fi
+
 #Check for arguments passed to simpleaur
-if [ "$1" == "--purge" ]; then
-  rm -rf "$basebuilddir"/*
-  exit
-elif [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$*" ]; then
+if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$*" ]; then
   usage
   printf "${ALL_OFF}"
+  exit
+elif [ "$1" == "--purge" ] || [ "$1" == "-p" ]; then
+  rm -rf "$basebuilddir"/*
+  exit
+elif [ "$1" == "--purgepkg" ] || [ "$1" == "-pp" ]; then
+  rm -rf "$pkgdown"/*
+  exit
+elif [ "$1" == "--download" ] || [ "$1" == "-d" ]; then
+  for pkgname in "${@:2}"; do
+    curl -s -o "$pkgdown/PKGBUILD-$pkgname" "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=$pkgname"
+    if [ "$?" -eq 0 ]; then
+      printf "\n${GREEN}Your PKGBUILD for [ $pkgname ] was saved in: ${YELLOW}[ $pkgdown/PKGBUILD-$pkgname ].${ALL_OFF}\n"
+    else
+      printf "\n${RED}Error: Failed to download the PKGBUILD for ${YELLOW}[ $pkgname ], make sure that you have internet connection and try again.${ALL_OFF}\n"
+    fi
+  done
+  printf "\n${GREEN}All done, leaving.${ALL_OFF}\n"
   exit
 else
   cd "$basebuilddir" || exit
@@ -53,11 +77,6 @@ fi
 if ! command -v pacman > /dev/null; then
   printf "\n${RED}Error: You are not using ArchLinux, pacman was not found in ($PATH)\n"
   exit
-fi
-
-#Check if the base Build DIR exists, if not create it.
-if [ ! -d "$basebuilddir" ]; then
-  mkdir -p "$basebuilddir"
 fi
 
 #Prevent two instances running at same time
