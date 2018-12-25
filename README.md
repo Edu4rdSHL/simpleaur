@@ -27,4 +27,4 @@ Usage:
   --check, -c                        Check available updates for packages installed from AUR.
 ```
 
-You are free to move the scripts to /usr/bin and then use it's from everywhere. If you are using ArchLinux, install the <b>simpleaur-git</b> package from the AUR.
+You are free to move the script to /usr/bin and then use it's from everywhere. If you are using ArchLinux, install the <b>simpleaur-git</b> package from the AUR.
