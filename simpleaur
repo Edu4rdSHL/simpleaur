@@ -3,7 +3,6 @@
 basebuilddir="$HOME/.simpleaur/Build"
 pkgdown="$HOME/.simpleaur/pkgbuilds"
 lockfile="$basebuilddir/simpleaur.lock"
-PKGDEST="$HOME/.simpleaur/Build/pkg"
 
 # prefer terminal safe colored and bold text when tput is supported - /usr/share/makepkg/util/message.sh
 if tput setaf 0 &>/dev/null; then
