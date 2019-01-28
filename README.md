@@ -20,8 +20,8 @@ $ rm -rf simpleaur/
 Usage:
   simpleaur package1 package2        Install package1 and package2 from AUR.
   --help, -h                         Show it dialog.
-  --purge, -p                        Delete all compiled packages in /home/sechacklabs/.simpleaur/Build.
-  --download, -d                     Download all PKGBUILDS of packages passed as arguments in /home/sechacklabs/.simpleaur/pkgbuilds.
+  --purge, -p                        Delete all compiled packages in $HOME/.simpleaur/Build.
+  --download, -d                     Download all PKGBUILDS of packages passed as arguments in $HOME/.simpleaur/pkgbuilds.
   --purgepkg, -pp                    Delete all downloaded PKGBUILDS in /home/sechacklabs/.simpleaur/pkgbuilds.
   --search, -s                       Search for packages in AUR.
   --check, -c                        Check available updates for packages installed from AUR.
