@@ -22,6 +22,17 @@ else
 fi
 readonly ALL_OFF BOLD BLUE GREEN RED YELLOW
 
+function lockfilecheck() {
+  #Prevent two instances running at same time
+  if [ -f "$lockfile" ]; then
+    printf "\n${RED}simpleaur is running, leaving.\n"
+    printf "\n${RED}If you are sure that simpleaur is not running, delete [ $lockfile ]\n"
+    exit
+  else
+    touch "$lockfile"
+  fi
+}
+
 function usage(){
   printf "${RED}Usage:
   simpleaur package1 package2        Install package1 and package2 from AUR.
@@ -30,10 +41,11 @@ function usage(){
   --download, -d                     Download all PKGBUILDS of packages passed as arguments in $pkgdown.
   --purgepkg, -pp                    Delete all downloaded PKGBUILDS in $pkgdown.
   --search, -s                       Search for packages in AUR.
+  --rebuild-git, -rg                 Rebuild all CVS AUR packages.
   --check, -c                        Check available updates for packages installed from AUR.\n${ALL_OFF}"
 }
 
-ctrl_c() {
+function ctrl_c() {
   printf "\n${RED}Keyboard Interrupt detected, removing lock file and leaving...\n"
   rm "$lockfile"
   printf "${ALL_OFF}"
@@ -91,6 +103,10 @@ elif [ "$1" == "--check" ] || [ "$1" == "-c" ]; then
     printf "${RED}You need to install auracle ${YELLOW}(https://aur.archlinux.org/packages/auracle-git)${RED} to use it option. You can install it running in your terminal: simpleaur auracle-git or installing it manually.\n${ALL_OFF}"
   fi
   exit
+elif [ "$1" == "-rg" ] || [ "$1" == "--rebuild-git" ]; then
+  packages=$(pacman -Qqm |grep git)
+  "$0" $packages
+  exit
 else
   cd "$basebuilddir" || exit
 fi
@@ -101,15 +117,7 @@ if ! command -v pacman > /dev/null; then
   exit
 fi
 
-#Prevent two instances running at same time
-if [ -f "$lockfile" ]; then
-  printf "\n${RED}simpleaur is running, leaving.\n"
-  printf "\n${RED}If you are sure that simpleaur is not running, delete [ $lockfile ]\n"
-  exit
-else
-  touch "$lockfile"
-fi
-
+logfilecheck
 # Check if the package was already downloaded and then download the PKGBUILDs accordly to user needs.
 for ipackage in "$@"; do
   if [ -f "$basebuilddir/$ipackage/PKGBUILD" ]; then
