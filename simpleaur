@@ -47,7 +47,7 @@ function usage(){
 
 function ctrl_c() {
   printf "\n${RED}Keyboard Interrupt detected, removing lock file and leaving...\n"
-  rm "$lockfile"
+  rm -f "$lockfile"
   printf "${ALL_OFF}"
   exit
 }
@@ -117,7 +117,7 @@ if ! command -v pacman > /dev/null; then
   exit
 fi
 
-logfilecheck
+lockfilecheck
 # Check if the package was already downloaded and then download the PKGBUILDs accordly to user needs.
 for ipackage in "$@"; do
   if [ -f "$basebuilddir/$ipackage/PKGBUILD" ]; then
