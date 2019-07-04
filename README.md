@@ -2,7 +2,7 @@
 A script for install packages from AUR that doesn't require extra dependences, only requires git installed. auracle is only needed if you want to search package names/updates in AUR (recommended). **simpleaur does NOT have automatic dependency resolution**. It support PKGBUILDs download and other minor options (execute simpleaur -h).
 
 # Instalation
-`git clone https://gitlab.com/edu4rdshl/simpleaur.git`
+`git clone https://github.com/edu4rdshl/simpleaur.git`
 
 ArchLinux users can install it from the PKGBUILD that is in AUR, type it commands:
 
