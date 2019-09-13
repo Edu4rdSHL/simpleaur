@@ -137,7 +137,7 @@ for ipackage in "$@"; do
     cd "$basebuilddir/$ipackage" || exit
     printf "${BLUE}View PKGBUILD for [ $ipackage ] ? [Y/n] ${ALL_OFF}"
     read -r answer
-    if [ "$answer" = "y" ] || [ "$answer" = "Y" ]  ; then
+    if [ "$answer" = "y" ] || [ "$answer" = "Y" ] || [ -z "$answer" ]; then
       ${EDITOR} PKGBUILD
     fi
   else
