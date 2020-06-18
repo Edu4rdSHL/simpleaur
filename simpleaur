@@ -152,7 +152,7 @@ cd "$basebuilddir" || exit
 for ipackage in "$@"; do
   if [ -d "$ipackage" ]; then
     cd "$ipackage" || exit
-    if makepkg -sci ; then
+    if makepkg -sci --noconfirm ; then
       cd "$basebuilddir" || exit
       printf "\n${GREEN}The package ${BLUE}[ $ipackage ] ${GREEN}has been installed.\n"
       continue
